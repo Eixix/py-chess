@@ -14,6 +14,9 @@ class Queen(Figure):
     def __init__(self, colour: Colour):
         super().__init__(colour)
 
+    def get_picture(self):
+        return "♕" if self.colour == Colour.WHITE else "♛"
+
     def get_moves(self, position: tuple[int, int], chessboard: "Chessboard") -> list[list[tuple[int, int]]]:
         rook_moves = Rook(self.colour).get_moves(position, chessboard)
         bishop_moves = Bishop(self.colour).get_moves(position, chessboard)

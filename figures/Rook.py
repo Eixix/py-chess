@@ -13,6 +13,9 @@ class Rook(Figure):
         super().__init__(colour)
         self.has_moved = False
 
+    def get_picture(self):
+        return "♖" if self.colour == Colour.WHITE else "♜"
+
     def get_moves(self, position: tuple[int, int], chessboard: "Chessboard") -> list[list[tuple[int, int]]]:
         return [*self._get_moves_top(position, chessboard), *self._get_moves_bottom(position, chessboard),
                 *self._get_moves_left(position, chessboard), *self._get_moves_right(position, chessboard)]
