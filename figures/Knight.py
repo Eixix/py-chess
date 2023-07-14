@@ -10,6 +10,9 @@ class Knight(Figure):
     def __init__(self, colour: Colour):
         super().__init__(colour)
 
+    def get_picture(self):
+        return '♘' if self.colour is Colour.WHITE else '♞'
+
     def get_moves(self, position: tuple[int, int], chessboard: "Chessboard") -> list[tuple[int, int]]:
         moves = []
         x, y = position
@@ -43,7 +46,7 @@ class Knight(Figure):
                     moves.append((x - 1, y + 2))
 
             if y - 2 >= 0:
-                figure = chessboard.get_figure_from_position((x + 1, y - 2))
+                figure = chessboard.get_figure_from_position((x - 1, y - 2))
                 if figure is None or figure.colour is not self.colour:
                     moves.append((x - 1, y - 2))
 

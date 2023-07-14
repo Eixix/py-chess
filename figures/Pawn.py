@@ -11,6 +11,9 @@ class Pawn(Figure):
         super().__init__(colour)
         self.has_moved = False
 
+    def get_picture(self):
+        return '♙' if self.colour is Colour.WHITE else '♟︎'
+
     def get_moves(self, position: tuple[int, int], chessboard: "Chessboard") -> list[tuple[int, int]]:
         moves = []
         x, y = position
