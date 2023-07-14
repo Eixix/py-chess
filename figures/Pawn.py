@@ -1,4 +1,4 @@
-from typing import Tuple, List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from Colour import Colour
 from figures.Figure import Figure
