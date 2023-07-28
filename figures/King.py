@@ -1,3 +1,5 @@
+import functools
+
 from typing import TYPE_CHECKING
 
 from Colour import Colour
@@ -12,7 +14,6 @@ class King(Figure):
 
     def __init__(self, colour: Colour):
         super().__init__(colour)
-        self.has_moved = False
 
     def get_picture(self):
         return "♔" if self.colour == Colour.WHITE else "♚"
@@ -55,12 +56,16 @@ class King(Figure):
             moves.append((x - 1, y - 1))
 
         # Castling
-        if not self.has_moved:
+        if not self.moves:
             left_rook = chessboard.get_figure_from_position((x, 0))
             right_rook = chessboard.get_figure_from_position((x, 7))
-            if isinstance(left_rook, Rook) and not left_rook.has_moved:
+            if isinstance(left_rook, Rook) and not left_rook.moves and functools.reduce(
+                    lambda free, pos: chessboard.get_figure_from_position(pos) is None,
+                    [(x, pos_y) for pos_y in range(1, y - 1)], True):
                 moves.append((x, 1))
-            if isinstance(right_rook, Rook) and not right_rook.has_moved:
+            if isinstance(right_rook, Rook) and not right_rook.moves and functools.reduce(
+                    lambda free, pos: chessboard.get_figure_from_position(pos) is None,
+                    [(x, pos_y) for pos_y in range(y + 1, 6)], True):
                 moves.append((x, 5))
 
         return moves
