@@ -9,7 +9,6 @@ if TYPE_CHECKING:
 class Rook(Figure):
     def __init__(self, colour: Colour):
         super().__init__(colour)
-        self.has_moved = False
 
     def get_picture(self):
         return '♖' if self.colour is Colour.WHITE else '♜'
