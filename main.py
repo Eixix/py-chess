@@ -21,7 +21,6 @@ chessboard = Chessboard()
 is_moving_piece = False
 start_position = (0, 0)
 current_moves = []
-whites_turn = True
 
 
 def draw_board() -> None:
@@ -53,9 +52,10 @@ def mouse_show_moves() -> None:
     mouse_position = pygame.mouse.get_pos()
     y, x = map(lambda a: a // SIZE, mouse_position)
     figure = chessboard.get_figure_from_position((x, y))
-    if figure and figure.colour is (Colour.WHITE if whites_turn else Colour.BLACK):
+    if figure and figure.colour is (Colour.WHITE if chessboard.whites_turn else Colour.BLACK):
         print(f"{figure}: {figure.get_moves((x, y), chessboard)}")
         moves = figure.get_moves((x, y), chessboard)
+
         if len(moves) > 0:
             start_position = (x, y)
             is_moving_piece = True
@@ -63,14 +63,19 @@ def mouse_show_moves() -> None:
 
 
 def mouse_select_move() -> None:
-    global is_moving_piece, current_moves, whites_turn
+    global is_moving_piece, current_moves, running
     mouse_position = pygame.mouse.get_pos()
     y, x = map(lambda a: a // SIZE, mouse_position)
     for curr_x, curr_y in current_moves:
         if curr_x == x and curr_y == y:
             chessboard.move_figure(start_position, (x, y))
-            whites_turn = not whites_turn
+            if chessboard.check_check():
+                print("Check!")
+                if chessboard.check_checkmate():
+                    print("Checkmate!")
+                    running = False
 
+            chessboard.whites_turn = not chessboard.whites_turn
     is_moving_piece = False
     current_moves = []
 

@@ -1,4 +1,4 @@
-from typing import Optional
+import copy
 
 from Colour import Colour
 from figures.Bishop import Bishop
@@ -10,7 +10,7 @@ from figures.Queen import Queen
 from figures.Rook import Rook
 
 
-def _place_figures() -> list[list[Optional[Figure]]]:
+def _place_figures() -> list[list[Figure | None]]:
     return [
         [Rook(Colour.WHITE), Knight(Colour.WHITE), Bishop(Colour.WHITE), King(Colour.WHITE), Queen(Colour.WHITE),
          Bishop(Colour.WHITE), Knight(Colour.WHITE), Rook(Colour.WHITE)],
@@ -29,10 +29,13 @@ def _place_figures() -> list[list[Optional[Figure]]]:
 
 class Chessboard:
     def __init__(self):
-        self.board = _place_figures()
+        self.board: list[list[Figure | None]] = _place_figures()
+        self.whites_turn = True
         self.last_move = ()
+        self.checked = False
+        self.mate = False
 
-    def get_figure_from_position(self, position: tuple[int, int]) -> Optional[Figure]:
+    def get_figure_from_position(self, position: tuple[int, int]) -> Figure | None:
         x, y = position
         return self.board[x][y]
 
@@ -40,6 +43,30 @@ class Chessboard:
         queen = Queen(figure.colour)
         queen.moves = figure.moves
         self.board[pos_x][pos_y] = queen
+
+    def check_check(self) -> bool:
+        for x, row in enumerate(self.board):
+            for y, figure in enumerate(row):
+                if figure is not None and figure.colour == (Colour.WHITE if self.whites_turn else Colour.BLACK):
+                    for position in figure.get_moves((x, y), self):
+                        possible_king = self.get_figure_from_position(position)
+                        if isinstance(possible_king, King) and possible_king.colour != figure.colour:
+                            self.checked = True
+                            return True
+        return False
+
+    def check_checkmate(self) -> bool:
+        for x, row in enumerate(self.board):
+            for y, figure in enumerate(row):
+                if figure is not None and figure.colour == (Colour.BLACK if self.whites_turn else Colour.WHITE):
+                    for position in figure.get_moves((x, y), self):
+                        clone = copy.deepcopy(self)
+                        clone.move_figure((x, y), position)
+                        if not clone.check_check():
+                            self.mate = False
+                            return False
+        self.mate = True
+        return True
 
     def move_figure(self, start_position: tuple[int, int], end_position: tuple[int, int]):
         start_x, start_y = start_position
@@ -68,3 +95,4 @@ class Chessboard:
         if isinstance(figure, Pawn) and (figure.colour == Colour.WHITE and end_x == 7) or (
                 figure.colour == Colour.BLACK and end_x == 0):
             self._promote(figure, end_x, end_y)
+
