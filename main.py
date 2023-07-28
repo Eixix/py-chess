@@ -53,8 +53,8 @@ def mouse_show_moves() -> None:
     y, x = map(lambda a: a // SIZE, mouse_position)
     figure = chessboard.get_figure_from_position((x, y))
     if figure and figure.colour is (Colour.WHITE if chessboard.whites_turn else Colour.BLACK):
-        print(f"{figure}: {figure.get_moves((x, y), chessboard)}")
-        moves = figure.get_moves((x, y), chessboard)
+        moves = chessboard.check_possible_moves_for_piece((x, y))
+        print(f"{figure}: {moves}")
 
         if len(moves) > 0:
             start_position = (x, y)
@@ -74,6 +74,9 @@ def mouse_select_move() -> None:
                 if chessboard.check_checkmate():
                     print("Checkmate!")
                     running = False
+            elif chessboard.check_stalemate():
+                print("Stalemate!")
+                running = False
 
             chessboard.whites_turn = not chessboard.whites_turn
     is_moving_piece = False
