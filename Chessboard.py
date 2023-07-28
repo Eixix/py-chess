@@ -33,7 +33,6 @@ class Chessboard:
         self.whites_turn = True
         self.last_move = ()
         self.checked = False
-        self.mate = False
 
     def get_figure_from_position(self, position: tuple[int, int]) -> Figure | None:
         x, y = position
@@ -63,10 +62,27 @@ class Chessboard:
                         clone = copy.deepcopy(self)
                         clone.move_figure((x, y), position)
                         if not clone.check_check():
-                            self.mate = False
                             return False
-        self.mate = True
         return True
+
+    def check_stalemate(self) -> bool:
+        for x, row in enumerate(self.board):
+            for y, figure in enumerate(row):
+                if figure is not None and figure.colour == (Colour.BLACK if self.whites_turn else Colour.WHITE):
+                    if len(self.check_possible_moves_for_piece((x, y))) > 0:
+                        return False
+        return True
+
+    def check_possible_moves_for_piece(self, start_position: tuple[int, int]) -> list[tuple[int, int]]:
+        moves = []
+        figure = self.get_figure_from_position(start_position)
+        for end_position in figure.get_moves(start_position, self):
+            clone = copy.deepcopy(self)
+            clone.whites_turn = not clone.whites_turn
+            clone.move_figure(start_position, end_position)
+            if not clone.check_check():
+                moves.append(end_position)
+        return moves
 
     def move_figure(self, start_position: tuple[int, int], end_position: tuple[int, int]):
         start_x, start_y = start_position
@@ -92,7 +108,6 @@ class Chessboard:
         self.last_move = end_position
 
         # Promotion (defaulted to Queen)
-        if isinstance(figure, Pawn) and (figure.colour == Colour.WHITE and end_x == 7) or (
-                figure.colour == Colour.BLACK and end_x == 0):
+        if isinstance(figure, Pawn) and ((figure.colour == Colour.WHITE and end_x == 7) or (
+                figure.colour == Colour.BLACK and end_x == 0)):
             self._promote(figure, end_x, end_y)
-
