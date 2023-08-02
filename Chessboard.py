@@ -12,7 +12,7 @@ from Colour import Colour
 
 class Chessboard:
     def __init__(self):
-        self.board = [
+        self.board: list[list[Figure | None]]  = [
             [Rook(Colour.WHITE), Knight(Colour.WHITE), Bishop(Colour.WHITE), King(Colour.WHITE), Queen(Colour.WHITE), Bishop(Colour.WHITE), Knight(Colour.WHITE), Rook(Colour.WHITE)],
             [Pawn(Colour.WHITE), Pawn(Colour.WHITE), Pawn(Colour.WHITE), Pawn(Colour.WHITE), Pawn(Colour.WHITE), Pawn(Colour.WHITE), Pawn(Colour.WHITE), Pawn(Colour.WHITE)],
             [None, None, None, None, None, None, None, None],
